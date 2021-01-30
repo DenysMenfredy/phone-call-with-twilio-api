@@ -1,21 +1,35 @@
 import os
 from dotenv import load_dotenv
 from twilio.rest import Client
+import argparse
 
 
-load_dotenv()
+def main():
+    load_dotenv() # load environment variables from .env file
 
-account_sid = os.getenv('TWILIO_ACCOUNT_SID') # put your twilio account_sid here
-auth_token = os.getenv('TWILIO_AUTH_TOKEN') # put your twilio auth_token here
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID') 
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    my_number = str(os.getenv('MY_NUMBER'))
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--to", "--numbertocall", required=True, 
+                    help="number to call")
+    
+    args = vars(ap.parse_args())
+    number_to_call = args['to']
 
-client = Client(account_sid, auth_token)
+    client = Client(account_sid, auth_token)
 
-response_url = 'https://handler.twilio.com/twiml/EHa29a0f5d1b5526a0e2fad5d46dec31b0'
 
-call = client.calls.create(
-    url=response_url,
-    to='', # put your number registered in twilio here
-    from_='' # put the number you wanna call here
-)
+    response_url = 'http://demo.twilio.com/docs/voice.xml' #example of a call from twilio api
 
-print(call.sid)
+    call = client.calls.create(
+        url=response_url,
+        to=f'+55{number_to_call}', 
+        from_=my_number 
+    )
+
+    print(call.sid)
+
+
+if __name__ == '__main__':
+    main()
